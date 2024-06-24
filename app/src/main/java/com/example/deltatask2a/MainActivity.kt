@@ -14,6 +14,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.annotation.Nullable
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
@@ -37,6 +38,11 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
@@ -51,11 +57,13 @@ import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.layout.layout
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.deltatask2a.Objetcs.highscore
+import kotlinx.coroutines.delay
 import java.nio.file.Path
 import kotlin.io.path.moveTo
 
@@ -66,15 +74,16 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            val color = Color(0xFF00CED1)
-            val salmon = Color(0xFFFF6F61)
-            val brown = Color(0xFF8B4513)
+            val Color1 = Color(0xFF8B4513)
+            val Color2 = Color(0xFFFF6F61)
+            val backgroundColor = Color(0xFFFFEB3B)
 
-
-            Box(modifier = Modifier
-                .fillMaxSize()
-                .padding(16.dp)) {
-
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(16.dp)
+                    .background(Color.Black)
+            ) {
                 Image(
                     painter = painterResource(id = R.drawable.jerry),
                     contentDescription = null,
@@ -93,54 +102,71 @@ class MainActivity : ComponentActivity() {
                     Text(
                         "CHASE GAME",
                         fontSize = 35.sp,
-                        color = Color(0xFF000080),
-                        fontWeight = FontWeight.Bold
+                        color = Color.Black,
+                        fontWeight = FontWeight.Bold,
+                        textAlign = TextAlign.Center
                     )
                     Spacer(modifier = Modifier.height(40.dp))
                     Button(
                         onClick = {
-                            Intent(
-                                applicationContext,
-                                Game::class.java
-                            ).also { startActivity(it) }
-
+                            Intent(applicationContext, Game::class.java).also { startActivity(it) }
                         },
                         modifier = Modifier
                             .padding(8.dp)
                             .fillMaxWidth(0.7f)
                             .height(50.dp)
                             .border(2.dp, Color.White, shape = RoundedCornerShape(15.dp)),
-                        colors = ButtonDefaults.buttonColors(containerColor = brown),
+                        colors = ButtonDefaults.buttonColors(containerColor =Color1),
                         shape = RoundedCornerShape(15.dp)
                     ) {
-                        Text("Start Game", color = Color.White, fontSize = 18.sp, fontWeight = FontWeight.Bold)
+                        Text(
+                            "Start Game",
+                            color = Color.White,
+                            fontSize = 18.sp,
+                            fontWeight = FontWeight.Bold
+                        )
                     }
                     Spacer(modifier = Modifier.height(16.dp))
                     Button(
-                        onClick = {Intent(
-                            applicationContext,
-                            Instruction::class.java
-                        ).also { startActivity(it) }
-
-
+                        onClick = {
+                            Intent(applicationContext, Instruction::class.java).also { startActivity(it) }
                         },
                         modifier = Modifier
                             .padding(8.dp)
                             .fillMaxWidth(0.7f)
                             .height(50.dp)
                             .border(2.dp, Color.White, shape = RoundedCornerShape(15.dp)),
-                        colors = ButtonDefaults.buttonColors(containerColor = salmon),
+                        colors = ButtonDefaults.buttonColors(containerColor =Color2),
                         shape = RoundedCornerShape(15.dp)
                     ) {
-                        Text("Instructions", color = Color.White, fontSize = 18.sp, fontWeight = FontWeight.Bold)
+                        Text(
+                            "Instructions",
+                            color = Color.White,
+                            fontSize = 18.sp,
+                            fontWeight = FontWeight.Bold
+                        )
                     }
                     Spacer(modifier = Modifier.height(20.dp))
-                    Text("High Score:$highscore",
-                        color=Color.Black,
-                        fontSize = 25.sp,
-                        fontWeight = FontWeight.Bold)
+                    Box(
+                        modifier = Modifier
+                            .padding(8.dp)
+                            .fillMaxWidth(0.7f)
+                            .background(backgroundColor)
+                            .height(50.dp)
+                            .border(2.dp, Color.Black, shape = RoundedCornerShape(15.dp)),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            "High Score: $highscore",
+                            color = Color.Black,
+                            fontSize = 25.sp,
+                            fontWeight = FontWeight.Bold,
+                            textAlign = TextAlign.Center
+                        )
+                    }
                 }
             }
+
         }
     }
 }

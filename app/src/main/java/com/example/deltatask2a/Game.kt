@@ -3,6 +3,7 @@ package com.example.deltatask2a
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.media.MediaPlayer
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -10,6 +11,7 @@ import androidx.annotation.Px
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
@@ -39,6 +41,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.Fill
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.Layout
@@ -62,6 +65,9 @@ class Game:ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?){
         super.onCreate(savedInstanceState)
         setContent {
+
+            score = 0
+
             GameScreen()
         }
 
@@ -90,21 +96,25 @@ fun GameScreen() {
     val brown = Color(0xFF8B4513)
     val game = rememberGameState()
 
-    if(!game.value.gameLost) {
+
+    if(!game.value.gameLost ) {
         LaunchedEffect(Unit) {
             while (true) {
                 columnMove(game)
                 delay(10)
                 game.value.score+=1
+                if(game.value.score>1000){
+                    game.value.gameLost=true
+                }
             }
         }
         Column(modifier = Modifier
             .fillMaxSize()
-            .padding(top = 16.dp)) {
+            .border(5.dp,color= Color.Black)) {
             Text(
                 text = "Score: ${game.value.score}",
                 modifier = Modifier.align(Alignment.CenterHorizontally),
-                color = Color.Black, fontSize = 25.sp
+                color = Color.Black, fontSize = 25.sp, fontWeight =FontWeight.Bold
             )
 
             Canvas(modifier = Modifier
@@ -174,6 +184,8 @@ fun GameScreen() {
                     Offset(game.value.tom.x, game.value.tom.y)
                 )
 
+
+
                 game.value = game.value.copy(obstacles = newObstacles)
                 newObstacles.forEach { obstacle ->
                     drawRect(
@@ -189,7 +201,7 @@ fun GameScreen() {
 
     }
 
-    else{
+    else {
         score=game.value.score
        val context= LocalContext.current
         LaunchedEffect(Unit) {
