@@ -2,6 +2,7 @@ package com.example.deltatask2a
 
 import android.content.Context
 import android.content.Intent
+import android.media.MediaPlayer
 
 
 import android.os.Bundle
@@ -55,6 +56,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.FirstBaseline
 import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.layout.layout
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -69,105 +71,148 @@ import kotlin.io.path.moveTo
 
 
 class MainActivity : ComponentActivity() {
-    @OptIn(ExperimentalLayoutApi::class)
+    private lateinit var mediaPlayer: MediaPlayer
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+
+        mediaPlayer = MediaPlayer.create(this, R.raw.background)
+        mediaPlayer.isLooping = true
+
         setContent {
-            val Color1 = Color(0xFF8B4513)
-            val Color2 = Color(0xFFFF6F61)
-            val backgroundColor = Color(0xFFFFEB3B)
-
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(16.dp)
-                    .background(Color.Black)
-            ) {
-                Image(
-                    painter = painterResource(id = R.drawable.jerry),
-                    contentDescription = null,
-                    modifier = Modifier.fillMaxSize(),
-                    contentScale = ContentScale.FillBounds
-                )
-
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp)
-                        .align(Alignment.TopCenter),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Spacer(modifier = Modifier.height(20.dp))
-                    Text(
-                        "CHASE GAME",
-                        fontSize = 35.sp,
-                        color = Color.Black,
-                        fontWeight = FontWeight.Bold,
-                        textAlign = TextAlign.Center
-                    )
-                    Spacer(modifier = Modifier.height(40.dp))
-                    Button(
-                        onClick = {
-                            Intent(applicationContext, Game::class.java).also { startActivity(it) }
-                        },
-                        modifier = Modifier
-                            .padding(8.dp)
-                            .fillMaxWidth(0.7f)
-                            .height(50.dp)
-                            .border(2.dp, Color.White, shape = RoundedCornerShape(15.dp)),
-                        colors = ButtonDefaults.buttonColors(containerColor =Color1),
-                        shape = RoundedCornerShape(15.dp)
-                    ) {
-                        Text(
-                            "Start Game",
-                            color = Color.White,
-                            fontSize = 18.sp,
-                            fontWeight = FontWeight.Bold
-                        )
-                    }
-                    Spacer(modifier = Modifier.height(16.dp))
-                    Button(
-                        onClick = {
-                            Intent(applicationContext, Instruction::class.java).also { startActivity(it) }
-                        },
-                        modifier = Modifier
-                            .padding(8.dp)
-                            .fillMaxWidth(0.7f)
-                            .height(50.dp)
-                            .border(2.dp, Color.White, shape = RoundedCornerShape(15.dp)),
-                        colors = ButtonDefaults.buttonColors(containerColor =Color2),
-                        shape = RoundedCornerShape(15.dp)
-                    ) {
-                        Text(
-                            "Instructions",
-                            color = Color.White,
-                            fontSize = 18.sp,
-                            fontWeight = FontWeight.Bold
-                        )
-                    }
-                    Spacer(modifier = Modifier.height(20.dp))
-                    Box(
-                        modifier = Modifier
-                            .padding(8.dp)
-                            .fillMaxWidth(0.7f)
-                            .background(backgroundColor)
-                            .height(50.dp)
-                            .border(2.dp, Color.Black, shape = RoundedCornerShape(15.dp)),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text(
-                            "High Score: $highscore",
-                            color = Color.Black,
-                            fontSize = 25.sp,
-                            fontWeight = FontWeight.Bold,
-                            textAlign = TextAlign.Center
-                        )
-                    }
-                }
-            }
-
+            MainScreen(mediaPlayer = mediaPlayer)
         }
+    }
+
+    override fun onStop() {
+        super.onStop()
+        mediaPlayer.stop()
+        mediaPlayer.release()
     }
 }
 
+@Composable
+fun MainScreen(mediaPlayer: MediaPlayer) {
+    val context = LocalContext.current
+    var isPlaying by remember { mutableStateOf(false) }
+
+    LaunchedEffect(Unit) {
+        if (!isPlaying) {
+            mediaPlayer.start()
+            isPlaying = true
+        }
+    }
+
+    val color1 = Color(0xFF8B4513)
+    val color2 = Color(0xFFFF6F61)
+    val backgroundColor = Color(0xFFFFEB3B)
+
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp)
+            .background(Color.Black)
+    ) {
+        Image(
+            painter = painterResource(id = R.drawable.jerry),
+            contentDescription = null,
+            modifier = Modifier.fillMaxSize(),
+            contentScale = ContentScale.FillBounds
+        )
+
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp)
+                .align(Alignment.TopCenter),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(
+                "CHASE GAME",
+                fontSize = 35.sp,
+                color = Color.Black,
+                fontWeight = FontWeight.Bold,
+                textAlign = TextAlign.Center
+            )
+            Spacer(modifier = Modifier.height(25.dp))
+            Button(
+                onClick = {
+                    mediaPlayer.pause()
+                    Intent(context, Game::class.java).also { context.startActivity(it) }
+                },
+                modifier = Modifier
+                    .padding(8.dp)
+                    .fillMaxWidth(0.7f)
+                    .height(50.dp)
+                    .border(2.dp, Color.White, shape = RoundedCornerShape(15.dp)),
+                colors = ButtonDefaults.buttonColors(containerColor = color1),
+                shape = RoundedCornerShape(15.dp)
+            ) {
+                Text(
+                    "Start Game",
+                    color = Color.White,
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.Bold
+                )
+            }
+            Spacer(modifier = Modifier.height(16.dp))
+            Button(
+                onClick = {
+                    Intent(context, Instruction::class.java).also { context.startActivity(it) }
+                },
+                modifier = Modifier
+                    .padding(8.dp)
+                    .fillMaxWidth(0.7f)
+                    .height(50.dp)
+                    .border(2.dp, Color.White, shape = RoundedCornerShape(15.dp)),
+                colors = ButtonDefaults.buttonColors(containerColor = color2),
+                shape = RoundedCornerShape(15.dp)
+            ) {
+                Text(
+                    "Instructions",
+                    color = Color.White,
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.Bold
+                )
+            }
+            Spacer(modifier = Modifier.height(16.dp))
+            Button(
+                onClick = {
+                    mediaPlayer.pause()
+                    Intent(context, Hacker::class.java).also { context.startActivity(it) }
+                },
+                modifier = Modifier
+                    .padding(8.dp)
+                    .fillMaxWidth(0.7f)
+                    .height(50.dp)
+                    .border(2.dp, Color.White, shape = RoundedCornerShape(15.dp)),
+                colors = ButtonDefaults.buttonColors(containerColor = Color.Green),
+                shape = RoundedCornerShape(15.dp)
+            ) {
+                Text(
+                    "Hacker",
+                    color = Color.White,
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.Bold
+                )
+            }
+            Box(
+                modifier = Modifier
+                    .padding(8.dp)
+                    .fillMaxWidth(0.7f)
+                    .background(backgroundColor)
+                    .height(50.dp)
+                    .border(2.dp, Color.Black, shape = RoundedCornerShape(15.dp)),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    "High Score: ${Objetcs.highscore}",
+                    color = Color.Black,
+                    fontSize = 25.sp,
+                    fontWeight = FontWeight.Bold,
+                    textAlign = TextAlign.Center
+                )
+            }
+        }
+    }
+}

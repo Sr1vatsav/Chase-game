@@ -261,8 +261,8 @@ fun rememberGameState(): MutableState<GameState> {
 
 fun generateObstacles(): List<Obstacle> {
     val obstacles = mutableListOf<Obstacle>()
-    val  y1=Random.nextInt(0,1000)
-    val y2=Random.nextInt(0,200)
+    val  y1=Random.nextInt(0,550)
+    val y2=Random.nextInt(0,550)
     val y3=Random.nextInt(400,550)
     obstacles.add(Obstacle(x = 850f, y =y2.toFloat(), width = 170f, height = 170f))
     obstacles.add(Obstacle(x = 490f, y = y1.toFloat(), width = 170f, height = 170f))
